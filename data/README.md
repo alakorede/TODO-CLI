@@ -1,0 +1,1 @@
+This directory is kept by the application, do not change anything here
