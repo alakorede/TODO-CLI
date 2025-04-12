@@ -49,33 +49,71 @@ async function createTodo(todoDescription) {
     }
 }
 
-async function removeTodo() {
-
+async function removeTodo(todoIndex) {
+    let index = todoIndex - 1;
+    const todoRemoved = await fileManager.removeData(index);
+    if (todoRemoved) {
+        return todoRemoved;
+    } else {
+        return false;
+    }
 }
 
 async function checkTodo(todoIndex) {
+    const index = parseInt(todoIndex, 10) - 1;
+    const todoChecked = await fileManager.updateData(index, null, true);
 
+    if (todoChecked) {
+        return todoChecked;
+    } else {
+        return false;
+    }
 }
 
-async function uncheckTodo() {
-
+async function uncheckTodo(todoIndex) { 
+    const index = parseInt(todoIndex, 10) - 1;
+    const todoUnchecked = await fileManager.updateData(index, null, false);
+    if (todoUnchecked) {
+        return todoUnchecked;
+    } else {
+        return false;
+    }
 }
 
-async function editTodo(todoIndex, newDescription) {
-
+async function editTodo(todoIndex) {
+    const index = parseInt(todoIndex, 10) - 1;
+    const todoEdited = await fileManager.updateData(index, true, null);
+    if (todoEdited) {
+        return todoEdited;
+    } else {
+        return false;
+    }
 }
 
 async function checkAllTodo() {
-
+    let todoList = await fileManager.getData();
+    if (!todoList) {
+        return false;
+    }
+    for (let i = 0; i < todoList.length; i++) {
+        await fileManager.updateData(i , null, true);
+    }
+    return true;
 }
 
 async function uncheckAllTodo() {
-
+    let todoList = await fileManager.getData();
+    if (!todoList) {
+        return false;
+    }
+    for (let i = 0; i < todoList.length; i++) {
+        await fileManager.updateData(i, null, false);
+    }
+    return true;
 }
 
 async function showTodoList(todoList){
-    let todoArray = todoList ? todoList : await fileManager.getData();
-    todoArray = todoArray ? JSON.parse(todoArray) : "";
+    let todoArray = todoList ? typeof todoList === "object" ? todoList : JSON.parse(todoList)  : await fileManager.getData();
 
     if (!Array.isArray(todoArray) || todoArray.length === 0) {
         process.stdout.write( '=== ToDo List ===\n\n  No tasks found.');
