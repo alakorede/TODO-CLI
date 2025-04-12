@@ -1,5 +1,5 @@
-const todoSrc = require("./src/todoSrc");
-const readline = require("readline");
+const todoSrc       = require("./src/todoSrc");
+const interaction   = require("./src/interaction");
 
 async function main(){
     switch (process.argv[2]) {
@@ -10,7 +10,7 @@ async function main(){
         }
         case "-a":
         case "--add": {
-            let todoDescription = await askQuestion("Enter the description for the new ToDo: ");
+            let todoDescription = await interaction.askQuestion("Enter the description for the new ToDo: ");
 
             if (!todoDescription) {
                 console.error("Error: You must provide a description to create a new ToDo.");
@@ -31,10 +31,10 @@ async function main(){
             if (!todoIndex) {
                 console.error("Error: You must provide a ToDo index to be checked");
             } else {
-                const checkTodo = todoSrc.checkTodo(todoIndex);
+                const checkTodo = await todoSrc.checkTodo(todoIndex);
                 if (checkTodo) {
-                    process.stdout.write(`ToDo checked: ${todoIndex}`);
-                    todoSrc.showTodoList();
+                    process.stdout.write(`ToDo checked: ${todoIndex} \n`);
+                    todoSrc.showTodoList(checkTodo);
                 } else {
                     console.error("Error: Unable to check ToDo, try again later.");
                 }
@@ -44,12 +44,11 @@ async function main(){
         case "-e":
         case "--edit": {
             const todoIndex = process.argv[3];
-            const todoDescription = process.argv[4];
 
-            if (!todoIndex || !todoDescription) {
-                console.error("Error: You must provide a ToDo index and a new description to edit.");
+            if (!todoIndex) {
+                console.error("Error: You must provide a ToDo index to be edited.");
             } else {
-                const editTodo = todoSrc.editTodo(todoIndex, todoDescription);
+                const editTodo = todoSrc.editTodo(todoIndex);
                 if (editTodo) {
                     process.stdout.write("ToDo Edited successfully");
                     todoSrc.showTodoList();
@@ -68,6 +67,7 @@ async function main(){
                 const removeTodo = todoSrc.removeTodo(todoIndex);
                 if (removeTodo) {
                     process.stdout.write("ToDo removed successfully");
+                    todoSrc.showTodoList(removeTodo);
                 } else {
                     console.error("Error: Unable to remove ToDo, try again later.");
                 }
@@ -110,10 +110,10 @@ async function main(){
             if (!todoIndex) {
                 console.error("Error: You must provide a ToDo index to be unchecked");
             } else {
-                const uncheckTodo = todoSrc.uncheckTodo(todoIndex);
+                const uncheckTodo = await todoSrc.uncheckTodo(todoIndex);
                 if (uncheckTodo) {
-                    process.stdout.write(`ToDo unchecked: ${todoIndex}`);
-                    todoSrc.showTodoList();
+                    process.stdout.write(`ToDo unchecked: ${todoIndex} \n`);
+                    todoSrc.showTodoList(uncheckTodo);
                 } else {
                     console.error("Error: Unable to uncheck ToDo, try again later.");
                 }
@@ -121,9 +121,9 @@ async function main(){
             break;
         }
         case "--check-all": {
-            const checkAll = todoSrc.checkAllTodo();
+            const checkAll = await todoSrc.checkAllTodo();
             if (checkAll) {
-                process.stdout.write("All ToDo checked successfully");
+                process.stdout.write(`All ToDo checked successfully \n`);
                 todoSrc.showTodoList();
             } else {
                 console.error("Error: Unable to check entire ToDo list");
@@ -131,9 +131,9 @@ async function main(){
             break;
         }
         case "--uncheck-all": {
-            const uncheckAll = todoSrc.uncheckAllTodo();
+            const uncheckAll = await todoSrc.uncheckAllTodo();
             if (uncheckAll) {
-                process.stdout.write("All ToDo unchecked successfully");
+                process.stdout.write(`All ToDo unchecked successfully \n`);
                 todoSrc.showTodoList();
             } else {
                 console.error("Error: Unable to uncheck entire ToDo list");
@@ -150,23 +150,15 @@ async function main(){
             break
         }
         default: {
-            todoSrc.showTodoList();
+            const userInput = process.argv[2];
+            if (userInput) {
+                console.error(`Error: Operation ${userInput} does not exist, run this CLI with -h or --help to see accepted operations`);
+                return;
+            } else {
+                todoSrc.showTodoList();
+            }
         }
     }
-}
-
-
-async function askQuestion(query){
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-    return new Promise((resolve) => {
-        rl.question(query, (answer) => {
-            rl.close();
-            resolve(answer);
-        });
-    });
 }
 
 main();

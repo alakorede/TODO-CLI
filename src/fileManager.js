@@ -1,4 +1,5 @@
 const fs                = require("fs/promises");
+const interaction       = require("./interaction");
 const filePath          = "./data/data.json";
 
 
@@ -6,7 +7,7 @@ const filePath          = "./data/data.json";
 async function getData() {
     try {
         const fileData = await fs.readFile(filePath, 'utf8');
-        return fileData;
+        return JSON.parse(fileData);
     } catch (error){
         process.stdout.write(`Data File was not found, creating new DataFile \n`);
         const firstContent = []
@@ -47,15 +48,47 @@ async function insertData(data) {
 
 async function removeData(index){
     try {
-
+        const fileData = await fs.readFile(filePath, 'utf8');
+        if(fileData) {
+            let dataObject = JSON.parse(fileData);
+            dataObject.splice(index, 1);
+            await fs.writeFile(filePath, JSON.stringify(dataObject, null, 2));
+            const todoRemoved = await fs.readFile(filePath, 'utf8');
+            return todoRemoved;
+        } else {
+            return false;
+        }
     } catch (error){
-
+        const todoObject = []
+        await fs.writeFile(filePath, JSON.stringify(todoObject, null, 2));
+        console.log("Database was not found, fail threated and normalized.");
     }
 }
 
 async function updateData(index, data, status) {
     try{
-
+        if (index !== undefined && index !== null && !data && status !== undefined && status !== null) {
+            let fileData = JSON.parse(await fs.readFile(filePath, 'utf8'));
+            if (status === true) {
+                fileData[index].status = true;
+                await fs.writeFile(filePath, JSON.stringify(fileData, null, 2));
+                return fileData;
+            } else {
+                fileData[index].status = false;
+                await fs.writeFile(filePath, JSON.stringify(fileData, null, 2));
+                return fileData;
+            }
+        } else if (index && data) {
+            let todoDescription = await interaction.askQuestion(`Enter the new description for Todo ${index} `);
+            if (!todoDescription) {
+                console.error("Error: New Description not provided, the Todo will be kept");
+            } else {
+                let fileData = JSON.parse(await fs.readFile(filePath, 'utf8'));
+                fileData[index].Description = todoDescription;
+                await fs.writeFile(filePath, JSON.stringify(fileData, null, 2));
+                return fileData;
+            }
+        }
     } catch (error){
 
     }
