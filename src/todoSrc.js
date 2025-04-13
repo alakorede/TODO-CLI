@@ -143,6 +143,15 @@ async function searchTodo(){
 
 }
 
+async function clearList() {
+    const cleanList = await fileManager.cleanData();
+    if (cleanList) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 module.exports = {
     consoleHelpText,
     createTodo,
@@ -154,5 +163,6 @@ module.exports = {
     uncheckAllTodo,
     checkAllTodo,
     searchTodo,
-    searchTodoIndex
+    searchTodoIndex,
+    clearList
 }
