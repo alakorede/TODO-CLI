@@ -17,7 +17,7 @@ async function main(){
             } else {
                 const newTodo = await todoSrc.createTodo(todoDescription);
                 if (newTodo) {
-                    process.stdout.write(`ToDo added: ${todoDescription}`);
+                    process.stdout.write(`ToDo added: ${todoDescription} \n`);
                     todoSrc.showTodoList(newTodo);
                 } else {
                     console.error("Error: Unable to add new ToDo, try again later.");
@@ -50,7 +50,7 @@ async function main(){
             } else {
                 const editTodo = todoSrc.editTodo(todoIndex);
                 if (editTodo) {
-                    process.stdout.write("ToDo Edited successfully");
+                    process.stdout.write(`ToDo Edited successfully \n`);
                     todoSrc.showTodoList();
                 } else {
                     console.error("Error: Unable to edit ToDo, try again later.");
@@ -64,9 +64,9 @@ async function main(){
             if (!todoIndex) {
                 console.error("Error: You must provide ToDo index to be removed");
             } else {
-                const removeTodo = todoSrc.removeTodo(todoIndex);
+                const removeTodo = await todoSrc.removeTodo(todoIndex);
                 if (removeTodo) {
-                    process.stdout.write("ToDo removed successfully");
+                    process.stdout.write(`ToDo removed successfully \n`);
                     todoSrc.showTodoList(removeTodo);
                 } else {
                     console.error("Error: Unable to remove ToDo, try again later.");
@@ -82,7 +82,7 @@ async function main(){
             } else {
                 const searchResult = todoSrc.searchTodo(searchTerm);
                 if (searchResult) {
-                    process.stdout.write(`Search result: ${searchResult}`);
+                    process.stdout.write(`Search result: ${searchResult} \n`);
                 } else {
                     console.error("Error: None ToDo could be found in the list");
                 }
@@ -97,7 +97,7 @@ async function main(){
             } else {
                 const searchResult = todoSrc.searchTodoIndex(searchTerm);
                 if (searchResult) {
-                    process.stdout.write(`First index related: ${searchResult}`);
+                    process.stdout.write(`First index related: ${searchResult} \n`);
                 } else {
                     console.error(`Error: Nothing found with ${searchTerm}`);
                 }
@@ -141,9 +141,11 @@ async function main(){
             break;
         }
         case "--clean-all": {
-            const clearList = todoSrc.clearList();
+            const clearList = await todoSrc.clearList();
             if (clearList) {
-                process.stdout.write("ToDo List Full Clear successfully");
+                let cleanListModel = [];
+                process.stdout.write(`ToDo List Full Clear successfully \n`);
+                todoSrc.showTodoList(cleanListModel);
             } else {
                 console.error("Error: Unable to clear ToDo list");
             }

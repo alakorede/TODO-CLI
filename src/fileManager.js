@@ -94,9 +94,20 @@ async function updateData(index, data, status) {
     }
 }
 
+async function cleanData() {
+    try {
+        fileData = [];
+        await fs.writeFile(filePath, JSON.stringify(fileData, null, 2));
+        return true
+    } catch (error) {
+        console.error(`Unable do clean List! \n`);
+    }
+}
+
 module.exports ={
     insertData,
     removeData,
     updateData,
-    getData
+    getData,
+    cleanData
 }
