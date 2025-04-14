@@ -76,30 +76,16 @@ async function main(){
         }
         case "-s":
         case "--search": {
-            const searchTerm = process.argv[3];
+            let searchTerm = await interaction.askQuestion("Enter your search term: ");
             if (!searchTerm) {
                 console.error("Error: You must provide a search term to search for.");
             } else {
-                const searchResult = todoSrc.searchTodo(searchTerm);
+                const searchResult = await todoSrc.searchTodo(searchTerm);
                 if (searchResult) {
                     process.stdout.write(`Search result: ${searchResult} \n`);
+                    todoSrc.showTodoList(searchResult);
                 } else {
                     console.error("Error: None ToDo could be found in the list");
-                }
-            }
-            break;
-        }
-        case "-si":
-        case "--search-index": {
-            const searchTerm = process.argv[3];
-            if (!searchTerm) {
-                console.error("Error: You must provide a search term to search for.");
-            } else {
-                const searchResult = todoSrc.searchTodoIndex(searchTerm);
-                if (searchResult) {
-                    process.stdout.write(`First index related: ${searchResult} \n`);
-                } else {
-                    console.error(`Error: Nothing found with ${searchTerm}`);
                 }
             }
             break;

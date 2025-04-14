@@ -17,8 +17,6 @@ function consoleHelpText() {
             -h, --help             Show this help menu
             -r, --remove [index]   Remove the ToDo at the specified index
             -s, --search [term]    Search and display ToDos containing the given term
-            -si, --search-index [term]
-                                    Search and display the first ToDo index containing the given term
             -u, --uncheck [index]  Unmark the ToDo at the specified index as completed
 
             --clean-all            Clean Todo List
@@ -135,12 +133,13 @@ async function showTodoList(todoList){
     return
 }
 
-async function searchTodoIndex(){
-
-}
-
-async function searchTodo(){
-
+async function searchTodo(searchTerm){
+    const search = await fileManager.findData(searchTerm);
+    if (!search) {
+        console.log(`No tasks found with the term: ${searchTerm}`);
+    } else {
+        return search;
+    }
 }
 
 async function clearList() {
@@ -163,6 +162,5 @@ module.exports = {
     uncheckAllTodo,
     checkAllTodo,
     searchTodo,
-    searchTodoIndex,
     clearList
 }
