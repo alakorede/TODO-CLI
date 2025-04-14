@@ -100,7 +100,17 @@ async function cleanData() {
         await fs.writeFile(filePath, JSON.stringify(fileData, null, 2));
         return true
     } catch (error) {
-        console.error(`Unable do clean List! \n`);
+        console.error(`ERROR: Unable do clean List! \n`);
+    }
+}
+
+async function findData(searchTerm) {
+    try {
+        let fileData = JSON.parse(await fs.readFile(filePath, 'utf8'));
+        let filteredData = await fileData.filter(item => item.Description.toLowerCase().includes(searchTerm.toLowerCase()));
+        return filteredData
+    } catch (error) {
+        console.error(`ERROR: Unable to find ${searchTerm} \n`);
     }
 }
 
@@ -109,5 +119,6 @@ module.exports ={
     removeData,
     updateData,
     getData,
-    cleanData
+    cleanData,
+    findData
 }
